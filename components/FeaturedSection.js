@@ -1,41 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import AnimeCard from './AnimeCard'
-import { getPopularAnime } from '@/app/data/animeData'
+import { featuredAnime } from '@/app/data/animeData'
 import { Sparkles, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
 export default function FeaturedSection() {
-  const [anime, setAnime] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadAnime() {
-      try {
-        const data = await getPopularAnime(12)
-        setAnime(data)
-      } catch (error) {
-        console.error('Failed to load featured anime:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadAnime()
-  }, [])
-
-  if (loading) {
-    return (
-      <section className="section-padding bg-dark-900">
-        <div className="container-custom">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-crimson-primary"></div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section className="section-padding bg-dark-900">
       <div className="container-custom">
@@ -65,13 +35,13 @@ export default function FeaturedSection() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-          {anime.map((item, index) => (
+          {featuredAnime.map((anime, index) => (
             <div
-              key={item.id}
+              key={anime.id}
               className="animate-fadeInUp"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <AnimeCard anime={item} />
+              <AnimeCard anime={anime} />
             </div>
           ))}
         </div>

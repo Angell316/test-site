@@ -1,12 +1,10 @@
 'use client'
 
+import { genres } from '@/app/data/animeData'
 import { Grid, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { GENRES } from '@/lib/shikimoriGraphQL'
 
 export default function GenresSection() {
-  const genreList = Object.keys(GENRES)
-
   return (
     <section className="section-padding bg-dark-800">
       <div className="container-custom">
@@ -27,7 +25,7 @@ export default function GenresSection() {
 
         {/* Genres Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {genreList.map((genre, index) => (
+          {genres.map((genre, index) => (
             <Link
               key={genre}
               href={`/anime?genre=${encodeURIComponent(genre)}`}

@@ -1,14 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { use, useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import AnimeListButton from '@/components/AnimeListButton'
 import CommentsSection from '@/components/CommentsSection'
+import KodikPlayer from '@/components/KodikPlayer'
 import { getAllAnime, getAnimeById } from '@/app/data/animeData'
-import { getAnimeById as getShikimoriAnimeById, getSimilarAnime } from '@/lib/shikimoriGraphQL'
 import { 
   Play, 
   Star, 
@@ -20,43 +19,44 @@ import {
   ChevronRight,
   Info,
   Film,
+  Users,
+  Award,
+  Bookmark,
   Heart
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function AnimeDetailPage() {
-  const params = useParams()
+export default function AnimeDetailPage({ params }) {
+  const resolvedParams = use(Promise.resolve(params))
   const [anime, setAnime] = useState(null)
   const [relatedAnime, setRelatedAnime] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadAnime() {
-      if (!params?.id) return
-      
       try {
         setLoading(true)
         
-        // Сначала проверяем локальные данные
-        const localAnime = getAnimeById(params.id)
+        // Загружаем аниме по ID (из Kodik или локальных данных)
+        const foundAnime = await getAnimeById(resolvedParams.id)
         
-        if (localAnime) {
-          setAnime(localAnime)
+        if (foundAnime) {
+          setAnime(foundAnime)
+          
           // Загружаем похожие из общего каталога
           const allAnime = await getAllAnime()
           const related = allAnime
-            .filter(a => a.id !== localAnime.id && localAnime.genre && a.genre && a.genre.some(g => localAnime.genre.includes(g)))
+            .filter(a => 
+              a.id !== foundAnime.id && 
+              foundAnime.genre && 
+              a.genre && 
+              a.genre.some(g => foundAnime.genre.includes(g))
+            )
             .slice(0, 6)
           setRelatedAnime(related)
         } else {
-          // Загружаем из API
-          const apiAnime = await getShikimoriAnimeById(params.id)
-          setAnime(apiAnime)
-          
-          // Загружаем похожие
-          const similar = await getSimilarAnime(params.id)
-          setRelatedAnime(similar)
+          setAnime(null)
         }
       } catch (error) {
         console.error('Failed to load anime:', error)
@@ -67,7 +67,7 @@ export default function AnimeDetailPage() {
     }
 
     loadAnime()
-  }, [params?.id])
+  }, [resolvedParams.id])
 
   if (loading) {
     return (
@@ -216,10 +216,7 @@ export default function AnimeDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3">
-                <button className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-crimson-primary to-crimson-dark text-white font-semibold shadow-crimson-glow hover:shadow-crimson-glow-lg transition-all duration-300 hover:scale-105">
-                  <Play className="w-5 h-5 fill-white" />
-                  <span>Смотреть</span>
-                </button>
+                <KodikPlayer anime={anime} className="flex-1 min-w-[200px]" />
                 <AnimeListButton animeId={anime.id} />
                 <button className="flex items-center justify-center px-4 py-3 rounded-xl glass-effect hover:bg-white hover:bg-opacity-10 text-white transition-all duration-300 hover:scale-105 group">
                   <Heart className="w-5 h-5 group-hover:text-crimson-primary group-hover:fill-crimson-primary transition-all" />

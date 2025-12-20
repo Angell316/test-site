@@ -7,7 +7,7 @@ import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAnimeLists } from '@/contexts/AnimeListContext'
-import { getAllAnime } from '@/app/data/animeData'
+import { featuredAnime, popularAnime } from '@/app/data/animeData'
 import { 
   User, Mail, Calendar, Edit, Save, X, Heart, Eye, CheckCircle, 
   Clock, XCircle, Settings, Shield, Lock, Image as ImageIcon, Trash2
@@ -19,7 +19,6 @@ export default function ProfilePage() {
   const { lists, getListStats } = useAnimeLists()
   const [activeTab, setActiveTab] = useState('lists')
   const [activeListTab, setActiveListTab] = useState('watching')
-  const [allAnime, setAllAnime] = useState([])
   
   // Settings states
   const [editedName, setEditedName] = useState('')
@@ -45,29 +44,13 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  // Загрузка аниме данных
-  useEffect(() => {
-    async function loadAnime() {
-      try {
-        const anime = await getAllAnime()
-        setAllAnime(anime)
-      } catch (error) {
-        console.error('Failed to load anime:', error)
-        setAllAnime([])
-      }
-    }
-    loadAnime()
-  }, [])
-
   if (!user) return null
 
   const stats = getListStats()
   
   // Получаем все аниме включая кастомные
-  const customAnime = typeof window !== 'undefined' 
-    ? JSON.parse(localStorage.getItem('custom_anime') || '[]') 
-    : []
-  const combinedAnime = [...allAnime, ...customAnime]
+  const customAnime = JSON.parse(localStorage.getItem('custom_anime') || '[]')
+  const allAnime = [...featuredAnime, ...popularAnime, ...customAnime]
 
   const listTabs = [
     { id: 'watching', label: 'Смотрю', icon: Eye, count: stats.watching, color: 'blue' },
@@ -83,7 +66,7 @@ export default function ProfilePage() {
   ]
 
   const currentAnimeList = lists[activeListTab]
-    .map(id => combinedAnime.find(anime => anime.id === id))
+    .map(id => allAnime.find(anime => anime.id === id))
     .filter(Boolean)
 
   const handleSaveProfile = () => {

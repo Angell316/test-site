@@ -1,48 +1,11 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
+import { featuredAnime } from '@/app/data/animeData'
 import { TrendingUp } from 'lucide-react'
-import { getAnimeList } from '@/lib/shikimoriGraphQL'
 
 export default function TopPage() {
-  const [topAnime, setTopAnime] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadTopAnime() {
-      try {
-        setLoading(true)
-        // Загружаем топ по рейтингу из Shikimori
-        const anime = await getAnimeList('ranked', 1, 25)
-        setTopAnime(anime)
-      } catch (error) {
-        console.error('Failed to load top anime:', error)
-        setTopAnime([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadTopAnime()
-  }, [])
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-dark-900">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh] pt-28">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-crimson-primary mx-auto mb-4"></div>
-            <p className="text-white text-lg">Загрузка топа...</p>
-          </div>
-        </div>
-        <Footer />
-      </main>
-    )
-  }
+  const sortedAnime = [...featuredAnime].sort((a, b) => b.rating - a.rating)
 
   return (
     <main className="min-h-screen bg-dark-900">
@@ -60,7 +23,7 @@ export default function TopPage() {
                 Топ аниме
               </h1>
               <p className="text-gray-400 mt-2">
-                Лучшие аниме по рейтингу Shikimori
+                Лучшие аниме по рейтингу
               </p>
             </div>
           </div>
@@ -70,29 +33,23 @@ export default function TopPage() {
       {/* Top Anime Grid */}
       <section className="pb-24 px-6 lg:px-12">
         <div className="container-custom">
-          {topAnime.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-              {topAnime.map((anime, index) => (
-                <div
-                  key={anime.id}
-                  className="relative animate-fadeInUp"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  {/* Rank badge */}
-                  <div className="absolute -top-3 -left-3 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-crimson-primary to-crimson-dark shadow-crimson-glow flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <AnimeCard anime={anime} />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {sortedAnime.map((anime, index) => (
+              <div
+                key={anime.id}
+                className="relative animate-fadeInUp"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {/* Rank badge */}
+                <div className="absolute -top-3 -left-3 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-crimson-primary to-crimson-dark shadow-crimson-glow flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">
+                    {index + 1}
+                  </span>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-gray-400 text-lg">Не удалось загрузить топ аниме</p>
-            </div>
-          )}
+                <AnimeCard anime={anime} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

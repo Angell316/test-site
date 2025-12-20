@@ -1,48 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import AnimeCard from './AnimeCard'
+import { animeMovies } from '@/app/data/animeData'
 import { Film, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import { getAnimeByKind } from '@/lib/shikimoriGraphQL'
 
 export default function MoviesSection() {
-  const [movies, setMovies] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadMovies() {
-      try {
-        // Загружаем фильмы через Shikimori API
-        const results = await getAnimeByKind('movie', 1, 8)
-        setMovies(results)
-      } catch (error) {
-        console.error('Failed to load movies:', error)
-        setMovies([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadMovies()
-  }, [])
-
-  if (loading) {
-    return (
-      <section className="section-padding bg-dark-900">
-        <div className="container-custom">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-crimson-primary"></div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  if (movies.length === 0) {
-    return null
-  }
-
   return (
     <section className="section-padding bg-dark-900">
       <div className="container-custom">
@@ -72,7 +35,7 @@ export default function MoviesSection() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {movies.map((movie, index) => (
+          {animeMovies.map((movie, index) => (
             <div
               key={movie.id}
               className="animate-fadeInUp"

@@ -1,14 +1,16 @@
 'use client'
 
 import { 
-  getAnimeList, 
-  getOngoingAnime, 
-  getAnnouncedAnime,
+  getAnimeList,
+  getPopularAnime as getKodikPopular,
+  getOngoingAnime as getKodikOngoing,
+  getLatestUpdates,
+  searchAnime as searchKodikAnime,
   getCachedData,
   setCachedData 
-} from '@/lib/shikimoriGraphQL'
+} from '@/lib/kodikAPI'
 
-// Получить все аниме (комбинация API данных и кастомных)
+// Получить все аниме (комбинация Kodik API данных и кастомных)
 export const getAllAnime = async () => {
   try {
     // Проверяем кэш
@@ -18,14 +20,23 @@ export const getAllAnime = async () => {
       return addCustomAnime(cached)
     }
 
-    // Получаем популярные аниме из Shikimori GraphQL
-    const popular = await getAnimeList('popularity', 1, 25)
+    // Получаем аниме из Kodik (последние обновления + популярные)
+    const [latest, popular] = await Promise.all([
+      getLatestUpdates(50),
+      getKodikPopular(50)
+    ])
+    
+    // Объединяем и удаляем дубликаты по ID
+    const allAnime = [...latest, ...popular]
+    const uniqueAnime = Array.from(
+      new Map(allAnime.map(anime => [anime.id, anime])).values()
+    )
     
     // Кэшируем результат
-    setCachedData(cacheKey, popular)
+    setCachedData(cacheKey, uniqueAnime)
     
     // Добавляем кастомные аниме из localStorage
-    return addCustomAnime(popular)
+    return addCustomAnime(uniqueAnime)
   } catch (error) {
     console.error('Failed to fetch anime:', error)
     return getCustomAnime() // Fallback to custom anime only
@@ -33,13 +44,13 @@ export const getAllAnime = async () => {
 }
 
 // Получить популярные аниме
-export const getPopularAnime = async (limit = 20) => {
+export const getPopularAnime = async (limit = 50) => {
   try {
     const cacheKey = `popular_anime_${limit}`
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getAnimeList('popularity', 1, limit)
+    const anime = await getKodikPopular(limit)
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
@@ -49,13 +60,13 @@ export const getPopularAnime = async (limit = 20) => {
 }
 
 // Получить онгоинги
-export const getOngoingAnimeList = async (limit = 20) => {
+export const getOngoingAnime = async (limit = 50) => {
   try {
     const cacheKey = `ongoing_anime_${limit}`
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getOngoingAnime(1, limit)
+    const anime = await getKodikOngoing(limit)
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
@@ -64,34 +75,47 @@ export const getOngoingAnimeList = async (limit = 20) => {
   }
 }
 
-// Получить анонсированные аниме
-export const getUpcomingAnimeList = async (limit = 20) => {
+// Получить последние обновления
+export const getUpcomingAnimeList = async (limit = 50) => {
   try {
-    const cacheKey = `upcoming_anime_${limit}`
+    const cacheKey = `latest_anime_${limit}`
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getAnnouncedAnime(1, limit)
+    const anime = await getLatestUpdates(limit)
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
-    console.error('Failed to fetch upcoming anime:', error)
+    console.error('Failed to fetch latest anime:', error)
     return []
   }
 }
 
 // Получить топ аниме (по рейтингу)
-export const getTopRatedAnime = async (limit = 20) => {
+export const getTopRatedAnime = async (limit = 50) => {
   try {
     const cacheKey = `top_rated_anime_${limit}`
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getAnimeList('ranked', 1, limit)
+    const anime = await getKodikPopular(limit) // Популярные обычно и топовые
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
     console.error('Failed to fetch top rated anime:', error)
+    return []
+  }
+}
+
+// Поиск аниме
+export const searchAnime = async (query, limit = 50) => {
+  try {
+    if (!query || query.trim().length < 2) return []
+    
+    const results = await searchKodikAnime(query, limit)
+    return results
+  } catch (error) {
+    console.error('Failed to search anime:', error)
     return []
   }
 }
@@ -114,8 +138,9 @@ export function saveAnime(anime) {
   const customAnime = getCustomAnime()
   const newAnime = {
     ...anime,
-    id: `custom_${Date.now()}`,
-    isCustom: true
+    id: `custom_${Date.now()}`, // Уникальный ID для кастомных аниме
+    isCustom: true,
+    source: 'custom'
   }
   
   customAnime.push(newAnime)
@@ -131,23 +156,38 @@ export function deleteAnime(animeId) {
   localStorage.setItem('custom_anime', JSON.stringify(filtered))
 }
 
-export function getAnimeById(id) {
+export async function getAnimeById(id) {
   // Сначала проверяем в кастомных
   const customAnime = getCustomAnime()
-  const custom = customAnime.find(anime => anime.id === id)
+  const custom = customAnime.find(anime => anime.id === id || anime.id === String(id))
   if (custom) return custom
   
-  // Если не найдено, возвращаем null (данные будут загружены из API)
-  return null
+  // Если не найдено в кастомных, ищем в API данных
+  try {
+    const allAnime = await getAllAnime()
+    const found = allAnime.find(anime => 
+      anime.id === id || 
+      anime.id === String(id) ||
+      anime.shikimori_id === id ||
+      anime.shikimori_id === String(id)
+    )
+    return found || null
+  } catch (error) {
+    console.error('Failed to fetch anime by ID:', error)
+    return null
+  }
 }
 
 // Инициализация при загрузке приложения
 export async function initializeAnimeData() {
   try {
-    // Предзагрузка популярных аниме
-    await getPopularAnime(25)
-    await getOngoingAnimeList(20)
-    console.log('Anime data initialized successfully from Shikimori GraphQL')
+    // Предзагрузка популярных аниме и онгоингов
+    await Promise.all([
+      getPopularAnime(50),
+      getOngoingAnime(30),
+      getLatestUpdates(30)
+    ])
+    console.log('Anime data initialized successfully from Kodik')
   } catch (error) {
     console.error('Failed to initialize anime data:', error)
   }
