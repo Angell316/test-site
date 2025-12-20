@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
@@ -27,7 +27,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function AnimeDetailPage({ params }) {
-  const resolvedParams = use(Promise.resolve(params))
   const [anime, setAnime] = useState(null)
   const [relatedAnime, setRelatedAnime] = useState([])
   const [loading, setLoading] = useState(true)
@@ -38,7 +37,7 @@ export default function AnimeDetailPage({ params }) {
         setLoading(true)
         
         // Загружаем аниме по ID (из Kodik или локальных данных)
-        const foundAnime = await getAnimeById(resolvedParams.id)
+        const foundAnime = await getAnimeById(params.id)
         
         if (foundAnime) {
           setAnime(foundAnime)
@@ -65,8 +64,10 @@ export default function AnimeDetailPage({ params }) {
       }
     }
 
-    loadAnime()
-  }, [resolvedParams.id])
+    if (params?.id) {
+      loadAnime()
+    }
+  }, [params?.id])
 
   if (loading) {
     return (
