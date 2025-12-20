@@ -8,6 +8,9 @@ import { useState } from 'react'
 export default function AnimeCard({ anime }) {
   const [imageError, setImageError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  
+  // Используем лучший постер если доступен после обогащения
+  const cardImage = anime.mainPoster || anime.image
 
   return (
     <Link
@@ -21,7 +24,7 @@ export default function AnimeCard({ anime }) {
         <div className="absolute inset-0 overflow-hidden bg-dark-700">
           {!imageError ? (
             <Image
-              src={anime.image}
+              src={cardImage}
               alt={anime.title}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"

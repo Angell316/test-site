@@ -105,12 +105,12 @@ export default function AnimeDetailPage({ params }) {
 
       {/* Hero Banner */}
       <section className="relative pt-16 overflow-hidden">
-        {/* Background Image with Gradient */}
+        {/* Background Image with Gradient - используем bannerImage для фона */}
         <div className="absolute inset-0 h-[600px]">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dark-900/80 to-dark-900 z-10"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-dark-900 via-transparent to-dark-900 z-10"></div>
           <Image
-            src={anime.image}
+            src={anime.bannerImage || anime.trailerImage || anime.image}
             alt={anime.title}
             fill
             className="object-cover opacity-30"
@@ -121,11 +121,11 @@ export default function AnimeDetailPage({ params }) {
         {/* Content */}
         <div className="relative z-20 container-custom px-4 md:px-6 lg:px-12 py-12 md:py-16">
           <div className="grid lg:grid-cols-[350px_1fr] gap-8 md:gap-12">
-            {/* Poster */}
+            {/* Poster - используем mainPoster для постера */}
             <div className="lg:col-span-1">
               <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-crimson-primary/30 animate-fadeInUp group">
                 <Image
-                  src={anime.image}
+                  src={anime.mainPoster || anime.image}
                   alt={anime.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -133,10 +133,22 @@ export default function AnimeDetailPage({ params }) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <button className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-crimson-primary text-white font-semibold hover:bg-crimson-light transition-all">
-                      <Play className="w-5 h-5 fill-white" />
-                      <span>Смотреть трейлер</span>
-                    </button>
+                    {anime.trailer?.url ? (
+                      <a 
+                        href={anime.trailer.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-crimson-primary text-white font-semibold hover:bg-crimson-light transition-all"
+                      >
+                        <Play className="w-5 h-5 fill-white" />
+                        <span>Смотреть трейлер</span>
+                      </a>
+                    ) : (
+                      <button className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-crimson-primary text-white font-semibold hover:bg-crimson-light transition-all opacity-50 cursor-not-allowed">
+                        <Play className="w-5 h-5 fill-white" />
+                        <span>Трейлер недоступен</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -232,6 +244,166 @@ export default function AnimeDetailPage({ params }) {
           </div>
         </div>
       </section>
+
+      {/* Screenshots & Images Gallery */}
+      {anime.allImages && anime.allImages.length > 1 && (
+        <section className="py-12 bg-dark-900">
+          <div className="container-custom px-4 md:px-6">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2">
+                  Галерея изображений
+                </h2>
+                <p className="text-gray-400">
+                  {anime.allImages.length} изображений из разных источников
+                </p>
+              </div>
+              {anime.enriched && (
+                <div className="hidden md:flex items-center gap-2 text-sm text-gray-400">
+                  <span className="px-3 py-1 rounded-lg glass-effect">
+                    Источники: {anime.enrichment_sources?.join(', ')}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {anime.allImages.slice(0, 12).map((img, index) => (
+                <div 
+                  key={`${img.url}-${index}`}
+                  className="relative aspect-video rounded-xl overflow-hidden group cursor-pointer hover-lift"
+                >
+                  <Image
+                    src={img.url}
+                    alt={`${anime.title} - ${img.type}`}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  />
+                  
+                  {/* Overlay with info */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <div className="flex items-center justify-between text-xs text-white">
+                        <span className="font-semibold capitalize">{img.type}</span>
+                        {img.quality && (
+                          <span className="px-2 py-0.5 rounded bg-crimson-primary/80 uppercase">
+                            {img.quality}
+                          </span>
+                        )}
+                      </div>
+                      {img.format && (
+                        <div className="mt-1 text-xs text-gray-400">
+                          {img.format.toUpperCase()}
+                          {img.width && ` • ${img.width}x${img.height}`}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Badge for type */}
+                  <div className="absolute top-2 left-2">
+                    {img.type === 'trailer' && (
+                      <div className="px-2 py-1 rounded-lg bg-crimson-primary/90 backdrop-blur-sm">
+                        <Play className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                    {img.type === 'poster' && (
+                      <div className="px-2 py-1 rounded-lg bg-blue-600/90 backdrop-blur-sm">
+                        <Film className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                    {img.type === 'screenshot' && (
+                      <div className="px-2 py-1 rounded-lg bg-purple-600/90 backdrop-blur-sm">
+                        <Eye className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {anime.allImages.length > 12 && (
+              <div className="mt-8 text-center">
+                <p className="text-gray-400">
+                  И ещё {anime.allImages.length - 12} изображений...
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Extended Info - MAL Stats */}
+      {anime.enriched && anime.mal_score && (
+        <section className="py-12 bg-dark-800">
+          <div className="container-custom px-4 md:px-6">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-8">
+              Статистика и рейтинги
+            </h2>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* MAL Score */}
+              {anime.mal_score && (
+                <div className="glass-effect rounded-xl p-4 text-center">
+                  <Star className="w-8 h-8 text-yellow-400 fill-yellow-400 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400 mb-1">MyAnimeList</p>
+                  <p className="text-2xl font-bold text-white">{anime.mal_score}</p>
+                  {anime.mal_scored_by && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {anime.mal_scored_by.toLocaleString()} оценок
+                    </p>
+                  )}
+                </div>
+              )}
+              
+              {/* Shikimori/Kodik Score */}
+              {anime.ratings?.shikimori && (
+                <div className="glass-effect rounded-xl p-4 text-center">
+                  <Star className="w-8 h-8 text-crimson-primary fill-crimson-primary mx-auto mb-2" />
+                  <p className="text-xs text-gray-400 mb-1">Shikimori</p>
+                  <p className="text-2xl font-bold text-white">{anime.ratings.shikimori}</p>
+                </div>
+              )}
+              
+              {/* MAL Rank */}
+              {anime.mal_rank && (
+                <div className="glass-effect rounded-xl p-4 text-center">
+                  <Award className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400 mb-1">Место в рейтинге</p>
+                  <p className="text-2xl font-bold text-white">#{anime.mal_rank}</p>
+                </div>
+              )}
+              
+              {/* MAL Popularity */}
+              {anime.mal_popularity && (
+                <div className="glass-effect rounded-xl p-4 text-center">
+                  <TrendingUp className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400 mb-1">Популярность</p>
+                  <p className="text-2xl font-bold text-white">#{anime.mal_popularity}</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Additional themes */}
+            {anime.themes && anime.themes.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-xl font-bold text-white mb-4">Темы</h3>
+                <div className="flex flex-wrap gap-2">
+                  {anime.themes.map((theme) => (
+                    <span 
+                      key={theme.mal_id || theme.name}
+                      className="px-4 py-2 rounded-lg glass-effect text-sm text-gray-300"
+                    >
+                      {theme.name || theme}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Comments Section */}
       <section className="py-12 bg-dark-800">
