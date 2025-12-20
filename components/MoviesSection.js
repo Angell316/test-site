@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import AnimeCard from './AnimeCard'
 import { Film, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import { searchAnime } from '@/lib/jikanAPI'
+import { getAnimeByKind } from '@/lib/shikimoriAPI'
 
 export default function MoviesSection() {
   const [movies, setMovies] = useState([])
@@ -13,10 +13,9 @@ export default function MoviesSection() {
   useEffect(() => {
     async function loadMovies() {
       try {
-        // Поиск аниме-фильмов через API
-        const results = await searchAnime('movie', 1, 10)
-        const movieResults = results.filter(anime => anime.type === 'Movie')
-        setMovies(movieResults.slice(0, 8))
+        // Загружаем фильмы через Shikimori API
+        const results = await getAnimeByKind('movie', 1, 8)
+        setMovies(results)
       } catch (error) {
         console.error('Failed to load movies:', error)
         setMovies([])

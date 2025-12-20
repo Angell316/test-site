@@ -5,7 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import { TrendingUp } from 'lucide-react'
-import { getTopAnime } from '@/lib/jikanAPI'
+import { getAnimeList } from '@/lib/shikimoriAPI'
 
 export default function TopPage() {
   const [topAnime, setTopAnime] = useState([])
@@ -15,8 +15,8 @@ export default function TopPage() {
     async function loadTopAnime() {
       try {
         setLoading(true)
-        // Загружаем топ по рейтингу
-        const anime = await getTopAnime('favorite', 1, 25)
+        // Загружаем топ по рейтингу из Shikimori
+        const anime = await getAnimeList('ranked', 1, 25)
         setTopAnime(anime)
       } catch (error) {
         console.error('Failed to load top anime:', error)
@@ -60,7 +60,7 @@ export default function TopPage() {
                 Топ аниме
               </h1>
               <p className="text-gray-400 mt-2">
-                Лучшие аниме по рейтингу MyAnimeList
+                Лучшие аниме по рейтингу Shikimori
               </p>
             </div>
           </div>

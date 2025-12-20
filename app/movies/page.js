@@ -5,7 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import { Film } from 'lucide-react'
-import { getTopAnime } from '@/lib/jikanAPI'
+import { getAnimeByKind } from '@/lib/shikimoriAPI'
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState([])
@@ -15,9 +15,8 @@ export default function MoviesPage() {
     async function loadMovies() {
       try {
         setLoading(true)
-        // Загружаем топ аниме и фильтруем только фильмы
-        const allAnime = await getTopAnime('bypopularity', 1, 25)
-        const moviesList = allAnime.filter(anime => anime.type === 'Movie')
+        // Загружаем фильмы из Shikimori
+        const moviesList = await getAnimeByKind('movie', 1, 25)
         setMovies(moviesList)
       } catch (error) {
         console.error('Failed to load movies:', error)
