@@ -1,12 +1,12 @@
 'use client'
 
 import { 
-  getTopAnime, 
-  getCurrentSeasonAnime, 
-  getUpcomingAnime,
+  getAnimeList, 
+  getOngoingAnime, 
+  getAnnouncedAnime,
   getCachedData,
   setCachedData 
-} from '@/lib/jikanAPI'
+} from '@/lib/shikimoriAPI'
 
 // Получить все аниме (комбинация API данных и кастомных)
 export const getAllAnime = async () => {
@@ -18,8 +18,8 @@ export const getAllAnime = async () => {
       return addCustomAnime(cached)
     }
 
-    // Получаем топ популярных аниме
-    const popular = await getTopAnime('bypopularity', 1, 25)
+    // Получаем популярные аниме из Shikimori
+    const popular = await getAnimeList('popularity', 1, 25)
     
     // Кэшируем результат
     setCachedData(cacheKey, popular)
@@ -39,7 +39,7 @@ export const getPopularAnime = async (limit = 20) => {
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getTopAnime('bypopularity', 1, limit)
+    const anime = await getAnimeList('popularity', 1, limit)
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
@@ -48,20 +48,16 @@ export const getPopularAnime = async (limit = 20) => {
   }
 }
 
-// Получить онгоинги (текущий сезон)
-export const getOngoingAnime = async (limit = 20) => {
+// Получить онгоинги
+export const getOngoingAnimeList = async (limit = 20) => {
   try {
     const cacheKey = `ongoing_anime_${limit}`
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getCurrentSeasonAnime(1)
-    const ongoing = anime
-      .filter(a => a.status === 'Онгоинг')
-      .slice(0, limit)
-    
-    setCachedData(cacheKey, ongoing)
-    return ongoing
+    const anime = await getOngoingAnime(1, limit)
+    setCachedData(cacheKey, anime)
+    return anime
   } catch (error) {
     console.error('Failed to fetch ongoing anime:', error)
     return []
@@ -75,11 +71,9 @@ export const getUpcomingAnimeList = async (limit = 20) => {
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getUpcomingAnime(1)
-    const upcoming = anime.slice(0, limit)
-    
-    setCachedData(cacheKey, upcoming)
-    return upcoming
+    const anime = await getAnnouncedAnime(1, limit)
+    setCachedData(cacheKey, anime)
+    return anime
   } catch (error) {
     console.error('Failed to fetch upcoming anime:', error)
     return []
@@ -93,7 +87,7 @@ export const getTopRatedAnime = async (limit = 20) => {
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getTopAnime('favorite', 1, limit)
+    const anime = await getAnimeList('ranked', 1, limit)
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
@@ -120,7 +114,7 @@ export function saveAnime(anime) {
   const customAnime = getCustomAnime()
   const newAnime = {
     ...anime,
-    id: `custom_${Date.now()}`, // Уникальный ID для кастомных аниме
+    id: `custom_${Date.now()}`,
     isCustom: true
   }
   
@@ -152,8 +146,8 @@ export async function initializeAnimeData() {
   try {
     // Предзагрузка популярных аниме
     await getPopularAnime(25)
-    await getOngoingAnime(20)
-    console.log('Anime data initialized successfully')
+    await getOngoingAnimeList(20)
+    console.log('Anime data initialized successfully from Shikimori')
   } catch (error) {
     console.error('Failed to initialize anime data:', error)
   }

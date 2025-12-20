@@ -1,13 +1,14 @@
 'use client'
 
-import { use, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import AnimeListButton from '@/components/AnimeListButton'
 import CommentsSection from '@/components/CommentsSection'
 import { getAllAnime, getAnimeById } from '@/app/data/animeData'
-import { getAnimeById as getJikanAnimeById, getAnimeRecommendations } from '@/lib/jikanAPI'
+import { getAnimeById as getShikimoriAnimeById, getSimilarAnime } from '@/lib/shikimoriAPI'
 import { 
   Play, 
   Star, 
@@ -19,27 +20,26 @@ import {
   ChevronRight,
   Info,
   Film,
-  Users,
-  Award,
-  Bookmark,
   Heart
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function AnimeDetailPage({ params }) {
-  const resolvedParams = use(Promise.resolve(params))
+export default function AnimeDetailPage() {
+  const params = useParams()
   const [anime, setAnime] = useState(null)
   const [relatedAnime, setRelatedAnime] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadAnime() {
+      if (!params?.id) return
+      
       try {
         setLoading(true)
         
         // Сначала проверяем локальные данные
-        const localAnime = getAnimeById(resolvedParams.id)
+        const localAnime = getAnimeById(params.id)
         
         if (localAnime) {
           setAnime(localAnime)
@@ -51,12 +51,12 @@ export default function AnimeDetailPage({ params }) {
           setRelatedAnime(related)
         } else {
           // Загружаем из API
-          const apiAnime = await getJikanAnimeById(resolvedParams.id)
+          const apiAnime = await getShikimoriAnimeById(params.id)
           setAnime(apiAnime)
           
-          // Загружаем рекомендации
-          const recommendations = await getAnimeRecommendations(resolvedParams.id)
-          setRelatedAnime(recommendations)
+          // Загружаем похожие
+          const similar = await getSimilarAnime(params.id)
+          setRelatedAnime(similar)
         }
       } catch (error) {
         console.error('Failed to load anime:', error)
@@ -67,7 +67,7 @@ export default function AnimeDetailPage({ params }) {
     }
 
     loadAnime()
-  }, [resolvedParams.id])
+  }, [params?.id])
 
   if (loading) {
     return (
