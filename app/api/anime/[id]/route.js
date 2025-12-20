@@ -1,56 +1,37 @@
-import { NextResponse } from 'next/server'
+// API Route: GET /api/anime/[id] - получить аниме по ID
 
-// GET - Get single anime by ID
+import { NextResponse } from 'next/server'
+import AnimeCacheService from '@/lib/services/animeCacheService'
+
 export async function GET(request, { params }) {
   try {
-    const { id } = params
+    const id = params.id
     
-    // In a real app, fetch from database by ID
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID is required' },
+        { status: 400 }
+      )
+    }
+    
+    const anime = await AnimeCacheService.getById(id)
+    
+    if (!anime) {
+      return NextResponse.json(
+        { success: false, error: 'Anime not found' },
+        { status: 404 }
+      )
+    }
+    
     return NextResponse.json({
-      message: `Fetch anime with ID: ${id}`,
-      note: 'Connect your database here'
+      success: true,
+      anime
     })
   } catch (error) {
+    console.error(`GET /api/anime/${params.id} error:`, error)
     return NextResponse.json(
-      { error: 'Failed to fetch anime' },
+      { success: false, error: error.message },
       { status: 500 }
     )
   }
 }
-
-// PUT - Update anime
-export async function PUT(request, { params }) {
-  try {
-    const { id } = params
-    const body = await request.json()
-    
-    // In a real app, update in database
-    return NextResponse.json({
-      message: `Anime ${id} updated successfully`,
-      data: body
-    })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update anime' },
-      { status: 500 }
-    )
-  }
-}
-
-// DELETE - Delete anime
-export async function DELETE(request, { params }) {
-  try {
-    const { id } = params
-    
-    // In a real app, delete from database
-    return NextResponse.json({
-      message: `Anime ${id} deleted successfully`
-    })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to delete anime' },
-      { status: 500 }
-    )
-  }
-}
-
