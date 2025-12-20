@@ -29,17 +29,26 @@ export default function Header() {
 
   // Search functionality
   useEffect(() => {
-    if (searchQuery.trim().length > 1) {
-      const allAnime = getAllAnime()
-      const filtered = allAnime.filter(anime =>
-        anime.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (anime.titleEn && anime.titleEn.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (anime.genre && anime.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase())))
-      ).slice(0, 6)
-      setSearchResults(filtered)
-    } else {
-      setSearchResults([])
+    async function search() {
+      if (searchQuery.trim().length > 1) {
+        try {
+          const allAnime = await getAllAnime()
+          const filtered = allAnime.filter(anime =>
+            anime.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (anime.titleEn && anime.titleEn.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (anime.genre && anime.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase())))
+          ).slice(0, 6)
+          setSearchResults(filtered)
+        } catch (error) {
+          console.error('Search failed:', error)
+          setSearchResults([])
+        }
+      } else {
+        setSearchResults([])
+      }
     }
+    
+    search()
   }, [searchQuery])
 
   // Mock notifications for demo

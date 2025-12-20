@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import HeroBanner from '@/components/HeroBanner'
@@ -6,26 +9,56 @@ import OngoingSection from '@/components/OngoingSection'
 import TrendingSection from '@/components/TrendingSection'
 import MoviesSection from '@/components/MoviesSection'
 import GenresSection from '@/components/GenresSection'
-import { getAllAnime } from '@/app/data/animeData'
+import { getPopularAnime, getOngoingAnime, getTopRatedAnime } from '@/app/data/animeData'
 
 export default function Home() {
-  const allAnime = getAllAnime()
-  
-  // Выбираем аниме для баннера (первые 5)
-  const bannerAnime = allAnime.slice(0, 5)
-  
-  // Аниме которые выходят (с статусом "Выходит" или "Анонсирован")
-  const ongoingAnime = allAnime
-    .filter(a => a.status && (a.status.includes('Выходит') || a.status.includes('Анонсирован') || a.status === 'Онгоинг'))
-    .slice(0, 10)
-  
-  // Популярные (с высоким рейтингом)
-  const trendingAnime = allAnime
-    .sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
-    .slice(0, 10)
+  const [bannerAnime, setBannerAnime] = useState([])
+  const [ongoingAnime, setOngoingAnime] = useState([])
+  const [trendingAnime, setTrendingAnime] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true)
+        
+        // Загружаем данные параллельно
+        const [popular, ongoing, trending] = await Promise.all([
+          getPopularAnime(10),
+          getOngoingAnime(20),
+          getTopRatedAnime(20)
+        ])
+
+        setBannerAnime(popular.slice(0, 5))
+        setOngoingAnime(ongoing)
+        setTrendingAnime(trending)
+      } catch (error) {
+        console.error('Failed to load anime data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-dark-900">
+        <Header />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-crimson-primary mx-auto mb-4"></div>
+            <p className="text-white text-lg">Загрузка аниме...</p>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-dark-900">
       <Header />
       <HeroBanner anime={bannerAnime} />
       <ContinueWatchingSection />

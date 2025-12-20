@@ -11,11 +11,23 @@ import { useState, useEffect } from 'react'
 export default function AnimePage() {
   const [allAnime, setAllAnime] = useState([])
   const [filteredAnime, setFilteredAnime] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const anime = getAllAnime()
-    setAllAnime(anime)
-    setFilteredAnime(anime)
+    async function loadAnime() {
+      try {
+        setLoading(true)
+        const anime = await getAllAnime()
+        setAllAnime(anime)
+        setFilteredAnime(anime)
+      } catch (error) {
+        console.error('Failed to load anime:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadAnime()
   }, [])
 
   const handleFilterChange = (filters) => {
@@ -53,7 +65,7 @@ export default function AnimePage() {
           case 'title':
             return a.title.localeCompare(b.title, 'ru')
           case 'popularity':
-            return (b.episodes || 0) - (a.episodes || 0)
+            return (b.popularity || 0) - (a.popularity || 0)
           default:
             return 0
         }
@@ -61,6 +73,21 @@ export default function AnimePage() {
     }
 
     setFilteredAnime(filtered)
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-dark-900">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh] pt-28">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-crimson-primary mx-auto mb-4"></div>
+            <p className="text-white text-lg">Загрузка каталога...</p>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    )
   }
 
   return (

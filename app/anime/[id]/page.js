@@ -1,12 +1,13 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import AnimeListButton from '@/components/AnimeListButton'
 import CommentsSection from '@/components/CommentsSection'
-import { getAllAnime } from '@/app/data/animeData'
+import { getAllAnime, getAnimeById } from '@/app/data/animeData'
+import { getAnimeById as getJikanAnimeById, getAnimeRecommendations } from '@/lib/jikanAPI'
 import { 
   Play, 
   Star, 
@@ -28,9 +29,60 @@ import Link from 'next/link'
 
 export default function AnimeDetailPage({ params }) {
   const resolvedParams = use(Promise.resolve(params))
-  const allAnime = getAllAnime()
-  const anime = allAnime.find((a) => a.id.toString() === resolvedParams.id)
-  const [activeTab, setActiveTab] = useState('info')
+  const [anime, setAnime] = useState(null)
+  const [relatedAnime, setRelatedAnime] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadAnime() {
+      try {
+        setLoading(true)
+        
+        // Сначала проверяем локальные данные
+        const localAnime = getAnimeById(resolvedParams.id)
+        
+        if (localAnime) {
+          setAnime(localAnime)
+          // Загружаем похожие из общего каталога
+          const allAnime = await getAllAnime()
+          const related = allAnime
+            .filter(a => a.id !== localAnime.id && localAnime.genre && a.genre && a.genre.some(g => localAnime.genre.includes(g)))
+            .slice(0, 6)
+          setRelatedAnime(related)
+        } else {
+          // Загружаем из API
+          const apiAnime = await getJikanAnimeById(resolvedParams.id)
+          setAnime(apiAnime)
+          
+          // Загружаем рекомендации
+          const recommendations = await getAnimeRecommendations(resolvedParams.id)
+          setRelatedAnime(recommendations)
+        }
+      } catch (error) {
+        console.error('Failed to load anime:', error)
+        setAnime(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadAnime()
+  }, [resolvedParams.id])
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-dark-900">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh] pt-28">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-crimson-primary mx-auto mb-4"></div>
+            <p className="text-white text-lg">Загрузка аниме...</p>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
 
   if (!anime) {
     return (
@@ -46,10 +98,6 @@ export default function AnimeDetailPage({ params }) {
       </main>
     )
   }
-
-  const relatedAnime = allAnime
-    .filter((a) => a.id !== anime.id && a.genre && anime.genre && a.genre.some((g) => anime.genre.includes(g)))
-    .slice(0, 6)
 
   return (
     <main className="min-h-screen bg-dark-900">
