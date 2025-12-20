@@ -5,7 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import { Film } from 'lucide-react'
-import { getAnimeByKind } from '@/lib/shikimoriAPI'
+import { getAnimeByKind } from '@/lib/shikimoriGraphQL'
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState([])

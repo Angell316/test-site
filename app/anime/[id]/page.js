@@ -8,7 +8,7 @@ import AnimeCard from '@/components/AnimeCard'
 import AnimeListButton from '@/components/AnimeListButton'
 import CommentsSection from '@/components/CommentsSection'
 import { getAllAnime, getAnimeById } from '@/app/data/animeData'
-import { getAnimeById as getShikimoriAnimeById, getSimilarAnime } from '@/lib/shikimoriAPI'
+import { getAnimeById as getShikimoriAnimeById, getSimilarAnime } from '@/lib/shikimoriGraphQL'
 import { 
   Play, 
   Star, 

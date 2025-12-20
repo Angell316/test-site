@@ -6,7 +6,7 @@ import {
   getAnnouncedAnime,
   getCachedData,
   setCachedData 
-} from '@/lib/shikimoriAPI'
+} from '@/lib/shikimoriGraphQL'
 
 // Получить все аниме (комбинация API данных и кастомных)
 export const getAllAnime = async () => {
@@ -18,7 +18,7 @@ export const getAllAnime = async () => {
       return addCustomAnime(cached)
     }
 
-    // Получаем популярные аниме из Shikimori
+    // Получаем популярные аниме из Shikimori GraphQL
     const popular = await getAnimeList('popularity', 1, 25)
     
     // Кэшируем результат
@@ -147,7 +147,7 @@ export async function initializeAnimeData() {
     // Предзагрузка популярных аниме
     await getPopularAnime(25)
     await getOngoingAnimeList(20)
-    console.log('Anime data initialized successfully from Shikimori')
+    console.log('Anime data initialized successfully from Shikimori GraphQL')
   } catch (error) {
     console.error('Failed to initialize anime data:', error)
   }

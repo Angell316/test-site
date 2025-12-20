@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import AnimeCard from './AnimeCard'
 import { Film, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import { getAnimeByKind } from '@/lib/shikimoriAPI'
+import { getAnimeByKind } from '@/lib/shikimoriGraphQL'
 
 export default function MoviesSection() {
   const [movies, setMovies] = useState([])

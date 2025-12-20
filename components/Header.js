@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Search, Menu, X, Play, Film, Tv, Star, User, LogIn, Shield, Bell, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import AuthModal from './AuthModal'
-import { getAllAnime } from '@/app/data/animeData'
+import { searchAnime } from '@/lib/shikimoriGraphQL'
 import Image from 'next/image'
 
 export default function Header() {
@@ -27,18 +27,13 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Search functionality
+  // Search functionality with GraphQL
   useEffect(() => {
     async function search() {
-      if (searchQuery.trim().length > 1) {
+      if (searchQuery.trim().length > 2) {
         try {
-          const allAnime = await getAllAnime()
-          const filtered = allAnime.filter(anime =>
-            anime.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (anime.titleEn && anime.titleEn.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (anime.genre && anime.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase())))
-          ).slice(0, 6)
-          setSearchResults(filtered)
+          const results = await searchAnime(searchQuery, 1, 6)
+          setSearchResults(results)
         } catch (error) {
           console.error('Search failed:', error)
           setSearchResults([])

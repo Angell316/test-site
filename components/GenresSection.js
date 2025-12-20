@@ -2,7 +2,7 @@
 
 import { Grid, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { GENRES } from '@/lib/jikanAPI'
+import { GENRES } from '@/lib/shikimoriGraphQL'
 
 export default function GenresSection() {
   const genreList = Object.keys(GENRES)

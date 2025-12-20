@@ -5,7 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import { TrendingUp } from 'lucide-react'
-import { getAnimeList } from '@/lib/shikimoriAPI'
+import { getAnimeList } from '@/lib/shikimoriGraphQL'
 
 export default function TopPage() {
   const [topAnime, setTopAnime] = useState([])
