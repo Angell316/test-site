@@ -3,70 +3,112 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
+import FilterBar from '@/components/FilterBar'
 import { getAllAnime } from '@/app/data/animeData'
-import { Filter, Grid, Search } from 'lucide-react'
+import { Grid } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export default function AnimePage() {
   const [allAnime, setAllAnime] = useState([])
+  const [filteredAnime, setFilteredAnime] = useState([])
 
   useEffect(() => {
-    setAllAnime(getAllAnime())
+    const anime = getAllAnime()
+    setAllAnime(anime)
+    setFilteredAnime(anime)
   }, [])
+
+  const handleFilterChange = (filters) => {
+    let filtered = [...allAnime]
+
+    // Filter by genre
+    if (filters.genre) {
+      filtered = filtered.filter(anime => 
+        anime.genre && anime.genre.includes(filters.genre)
+      )
+    }
+
+    // Filter by year
+    if (filters.year) {
+      filtered = filtered.filter(anime => 
+        anime.year && anime.year.toString() === filters.year
+      )
+    }
+
+    // Filter by status
+    if (filters.status) {
+      filtered = filtered.filter(anime => 
+        anime.status && anime.status === filters.status
+      )
+    }
+
+    // Sort
+    if (filters.sort) {
+      filtered.sort((a, b) => {
+        switch (filters.sort) {
+          case 'rating':
+            return parseFloat(b.rating) - parseFloat(a.rating)
+          case 'year':
+            return (b.year || 0) - (a.year || 0)
+          case 'title':
+            return a.title.localeCompare(b.title, 'ru')
+          case 'popularity':
+            return (b.episodes || 0) - (a.episodes || 0)
+          default:
+            return 0
+        }
+      })
+    }
+
+    setFilteredAnime(filtered)
+  }
 
   return (
     <main className="min-h-screen bg-dark-900">
       <Header />
       
       {/* Page Header */}
-      <section className="pt-32 pb-16 px-6 lg:px-12">
+      <section className="pt-28 pb-8 px-4 md:px-6 lg:px-12">
         <div className="container-custom">
           <div className="flex items-center space-x-4 mb-6">
             <div className="p-3 rounded-xl bg-gradient-to-br from-crimson-primary to-crimson-dark shadow-crimson-glow">
               <Grid className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-white">
+              <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
                 Каталог аниме
               </h1>
-              <p className="text-gray-400 mt-2">
-                Найдено {allAnime.length} тайтлов
+              <p className="text-gray-400 mt-1 text-sm md:text-base">
+                Найдено {filteredAnime.length} из {allAnime.length} тайтлов
               </p>
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mt-8">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Поиск аниме..."
-                className="w-full pl-12 pr-4 py-3 rounded-xl glass-effect text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-crimson-primary transition-all"
-              />
-            </div>
-            <button className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl glass-effect hover:bg-white hover:bg-opacity-10 transition-all">
-              <Filter className="w-5 h-5 text-crimson-primary" />
-              <span className="text-white font-medium">Фильтры</span>
-            </button>
-          </div>
+          {/* Filter Bar */}
+          <FilterBar onFilterChange={handleFilterChange} />
         </div>
       </section>
 
       {/* Anime Grid */}
-      <section className="pb-24 px-6 lg:px-12">
+      <section className="pb-16 px-4 md:px-6 lg:px-12">
         <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {allAnime.map((anime, index) => (
-              <div
-                key={anime.id}
-                className="animate-fadeInUp"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <AnimeCard anime={anime} />
-              </div>
-            ))}
-          </div>
+          {filteredAnime.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6">
+              {filteredAnime.map((anime, index) => (
+                <div
+                  key={anime.id}
+                  className="animate-fadeInUp"
+                  style={{ animationDelay: `${index * 30}ms` }}
+                >
+                  <AnimeCard anime={anime} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-gray-400 text-lg">Аниме не найдено. Попробуйте изменить фильтры.</p>
+            </div>
+          )}
         </div>
       </section>
 
