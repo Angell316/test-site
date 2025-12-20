@@ -6,6 +6,8 @@ import {
   getOngoingAnime as getKodikOngoing,
   getLatestUpdates,
   searchAnime as searchKodikAnime,
+  getAnimeByShikimoriId,
+  getAnimeByKinopoiskId,
   getCachedData,
   setCachedData 
 } from '@/lib/kodikAPI'
@@ -98,7 +100,7 @@ export const getTopRatedAnime = async (limit = 50) => {
     const cached = getCachedData(cacheKey)
     if (cached) return cached
 
-    const anime = await getKodikPopular(limit) // Популярные обычно и топовые
+    const anime = await getKodikPopular(limit) // Популярные = топ по рейтингу
     setCachedData(cacheKey, anime)
     return anime
   } catch (error) {
@@ -112,7 +114,7 @@ export const searchAnime = async (query, limit = 50) => {
   try {
     if (!query || query.trim().length < 2) return []
     
-    const results = await searchKodikAnime(query, limit)
+    const results = await searchKodikAnime(query, { limit })
     return results
   } catch (error) {
     console.error('Failed to search anime:', error)
@@ -138,7 +140,7 @@ export function saveAnime(anime) {
   const customAnime = getCustomAnime()
   const newAnime = {
     ...anime,
-    id: `custom_${Date.now()}`, // Уникальный ID для кастомных аниме
+    id: `custom_${Date.now()}`,
     isCustom: true,
     source: 'custom'
   }
@@ -164,14 +166,33 @@ export async function getAnimeById(id) {
   
   // Если не найдено в кастомных, ищем в API данных
   try {
-    const allAnime = await getAllAnime()
-    const found = allAnime.find(anime => 
-      anime.id === id || 
-      anime.id === String(id) ||
-      anime.shikimori_id === id ||
-      anime.shikimori_id === String(id)
-    )
-    return found || null
+    // Пытаемся загрузить по Shikimori ID или Kinopoisk ID
+    let apiAnime = null
+    
+    if (!id.toString().startsWith('custom_')) {
+      // Пробуем как Shikimori ID
+      apiAnime = await getAnimeByShikimoriId(id)
+      
+      // Если не найдено, пробуем как Kinopoisk ID
+      if (!apiAnime) {
+        apiAnime = await getAnimeByKinopoiskId(id)
+      }
+    }
+    
+    // Если всё ещё не найдено, ищем в общем списке
+    if (!apiAnime) {
+      const allAnime = await getAllAnime()
+      apiAnime = allAnime.find(anime => 
+        anime.id === id || 
+        anime.id === String(id) ||
+        anime.shikimori_id === id ||
+        anime.shikimori_id === String(id) ||
+        anime.kinopoisk_id === id ||
+        anime.kinopoisk_id === String(id)
+      )
+    }
+    
+    return apiAnime || null
   } catch (error) {
     console.error('Failed to fetch anime by ID:', error)
     return null

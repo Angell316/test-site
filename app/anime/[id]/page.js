@@ -6,7 +6,6 @@ import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
 import AnimeListButton from '@/components/AnimeListButton'
 import CommentsSection from '@/components/CommentsSection'
-import KodikPlayer from '@/components/KodikPlayer'
 import { getAllAnime, getAnimeById } from '@/app/data/animeData'
 import { 
   Play, 
@@ -216,7 +215,10 @@ export default function AnimeDetailPage({ params }) {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3">
-                <KodikPlayer anime={anime} className="flex-1 min-w-[200px]" />
+                <button className="flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-crimson-primary to-crimson-dark text-white font-semibold shadow-crimson-glow hover:shadow-crimson-glow-lg transition-all duration-300 hover:scale-105">
+                  <Play className="w-5 h-5 fill-white" />
+                  <span>Смотреть</span>
+                </button>
                 <AnimeListButton animeId={anime.id} />
                 <button className="flex items-center justify-center px-4 py-3 rounded-xl glass-effect hover:bg-white hover:bg-opacity-10 text-white transition-all duration-300 hover:scale-105 group">
                   <Heart className="w-5 h-5 group-hover:text-crimson-primary group-hover:fill-crimson-primary transition-all" />
