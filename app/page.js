@@ -10,6 +10,7 @@ import TrendingSection from '@/components/TrendingSection'
 import MoviesSection from '@/components/MoviesSection'
 import GenresSection from '@/components/GenresSection'
 import { getPopularAnime, getOngoingAnime, getTopRatedAnime } from '@/app/data/animeData'
+import { getBannerAnime } from '@/lib/enrichmentAPI'
 
 export default function Home() {
   const [bannerAnime, setBannerAnime] = useState([])
@@ -22,14 +23,14 @@ export default function Home() {
       try {
         setLoading(true)
         
-        // Загружаем данные параллельно
-        const [popular, ongoing, trending] = await Promise.all([
-          getPopularAnime(10),
+        // Загружаем обогащённые данные для баннера (параллельно с остальными)
+        const [banner, ongoing, trending] = await Promise.all([
+          getBannerAnime(5), // 5 аниме для баннера с трейлерами
           getOngoingAnime(20),
           getTopRatedAnime(20)
         ])
 
-        setBannerAnime(popular.slice(0, 5))
+        setBannerAnime(banner)
         setOngoingAnime(ongoing)
         setTrendingAnime(trending)
       } catch (error) {
@@ -50,6 +51,7 @@ export default function Home() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-crimson-primary mx-auto mb-4"></div>
             <p className="text-white text-lg">Загрузка аниме...</p>
+            <p className="text-gray-400 text-sm mt-2">Получение данных из нескольких источников...</p>
           </div>
         </div>
         <Footer />
