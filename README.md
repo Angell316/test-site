@@ -1,70 +1,145 @@
-# Getting Started with Create React App
+# 🎬 AnimeVerse
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Современная платформа для просмотра аниме с личным кабинетом и системой управления
 
-## Available Scripts
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
 
-In the project directory, you can run:
+## 🌟 Особенности
 
-### `npm start`
+- 🎨 **Современный дизайн** - минималистичный loft-стиль в малиновых тонах
+- 🔐 **Система авторизации** - 3 роли (User, Moderator, Admin)
+- 👤 **Личный кабинет** - полные настройки профиля
+- 📋 **Списки аниме** - 5 категорий (Смотрю, Просмотрено, Запланировано, Брошено, Избранное)
+- 💬 **Комментарии и рейтинги** - оценка 1-10 звёзд
+- ⚙️ **Админ-панель** - добавление аниме, модерация
+- 📱 **Адаптивный дизайн** - работает на всех устройствах
+- ✨ **Плавные анимации** - glass-эффекты и transitions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Быстрый старт
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Установка
 
-### `npm test`
+```bash
+# Клонировать репозиторий
+git clone https://github.com/YOUR_USERNAME/anime-site.git
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Перейти в директорию
+cd anime-site
 
-### `npm run build`
+# Установить зависимости
+npm install
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Запустить dev сервер
+npm run dev
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Откройте [http://localhost:3000](http://localhost:3000) в браузере.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🔑 Тестовые аккаунты
 
-### `npm run eject`
+Все пароли: `123456`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **user@test.com** - Пользователь
+- **mod@test.com** - Модератор
+- **admin@test.com** - Администратор
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 📂 Структура проекта
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+anime-site/
+├── app/                    # Next.js App Router
+│   ├── anime/             # Страницы аниме
+│   ├── movies/            # Фильмы
+│   ├── top/               # Топ
+│   ├── profile/           # Профиль
+│   ├── admin/             # Админ-панель
+│   ├── data/              # Mock данные
+│   ├── layout.js          # Root layout
+│   └── page.js            # Главная
+├── components/            # React компоненты
+├── contexts/              # React Contexts
+├── public/               # Статика
+└── ROADMAP.md            # Карта проекта
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🎯 Основной функционал
 
-## Learn More
+### Для пользователей
+- Просмотр каталога аниме
+- Добавление в списки
+- Комментарии и оценки
+- Настройки профиля
+- Смена аватара
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Для модераторов
+- Удаление любых комментариев
+- Все функции пользователя
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Для администраторов
+- Добавление нового аниме
+- Управление аниме
+- Модерация комментариев
+- Все функции модератора
 
-### Code Splitting
+## 🛠️ Технологии
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Framework:** Next.js 14 (App Router)
+- **UI:** React 18
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide React
+- **Fonts:** Google Fonts (Inter, Poppins)
+- **Storage:** localStorage (можно заменить на MongoDB)
 
-### Analyzing the Bundle Size
+## 📝 Скрипты
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+npm run dev      # Запуск dev сервера
+npm run build    # Сборка для production
+npm start        # Запуск production сервера
+npm run lint     # Проверка кода
+```
 
-### Making a Progressive Web App
+## 🗺️ Документация
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **[ROADMAP.md](./ROADMAP.md)** - Карта проекта, задачи, хранение данных
+- **[UPDATE-COMPLETE.md](./UPDATE-COMPLETE.md)** - Последние обновления
+- **[PERSONAL-CABINET.md](./PERSONAL-CABINET.md)** - Руководство по личному кабинету
+- **[START-HERE.md](./START-HERE.md)** - Начало работы
 
-### Advanced Configuration
+## 🎨 Цветовая схема
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```css
+/* Малиновые акценты */
+--crimson-primary: #dc143c
+--crimson-light: #ff1744
+--crimson-dark: #c2185b
 
-### Deployment
+/* Темный фон */
+--dark-900: #0a0a0a
+--dark-800: #131313
+--dark-700: #1a1a1a
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🔮 Будущие улучшения
 
-### `npm run build` fails to minify
+- [ ] MongoDB интеграция
+- [ ] Реальное API (Jikan, AniList)
+- [ ] Поиск и фильтры
+- [ ] Уведомления
+- [ ] PWA функционал
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📄 Лицензия
+
+MIT
+
+## 👨‍💻 Автор
+
+Создано с ❤️ для любителей аниме
+
+---
+
+**Версия:** 1.0.0  
+**Статус:** Development  
+**Последнее обновление:** 20.12.2024
