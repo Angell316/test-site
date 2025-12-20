@@ -1,13 +1,8 @@
-import { featuredAnime, popularAnime } from '@/app/data/animeData'
-
-export async function generateStaticParams() {
-  const allAnime = [...featuredAnime, ...popularAnime]
-  return allAnime.map((anime) => ({
-    id: anime.id.toString(),
-  }))
-}
+// Layout для страниц деталей аниме
+// generateStaticParams убран, так как используем dynamic rendering с API
 
 export default function AnimeDetailLayout({ children }) {
   return children
 }
+
 
