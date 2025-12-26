@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Play, Star, Clock } from 'lucide-react'
+import { Play, Star } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -20,10 +20,10 @@ export default function AnimeCard({ anime }) {
       <motion.div
         whileHover={{ y: -8 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-crimson-primary/30 transition-all duration-500"
+        className="relative overflow-hidden rounded-2xl border border-white/5 hover:border-crimson-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-crimson-primary/20"
       >
         {/* Full Image Container with Fixed Aspect Ratio */}
-        <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-dark-700 to-dark-900">
+        <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-dark-700 to-dark-800">
           {!imageError ? (
             <Image
               src={anime.image}
@@ -31,30 +31,33 @@ export default function AnimeCard({ anime }) {
               fill
               className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+              priority={false}
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-dark-700 to-dark-900">
-              <Play className="w-20 h-20 text-crimson-primary/20" />
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-dark-700 to-dark-800">
+              <Play className="w-16 h-16 text-crimson-primary/30" />
             </div>
           )}
 
-          {/* Permanent Bottom Gradient with Basic Info */}
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-dark-900 via-dark-900/95 to-transparent pt-20 pb-4 px-4">
-            {/* Title - Always Visible */}
-            <h3 className="text-base font-bold text-white line-clamp-2 leading-tight mb-2 drop-shadow-lg">
-              {anime.title}
-            </h3>
-
-            {/* Rating - Always Visible */}
-            {anime.rating > 0 && (
-              <div className="flex items-center space-x-1.5">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-lg" />
-                <span className="text-sm font-bold text-white drop-shadow-lg">
-                  {anime.rating.toFixed(1)}
-                </span>
-              </div>
-            )}
+          {/* Permanent Bottom Gradient with Main Info */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+            <div className="space-y-2">
+              {/* Title - Always Visible */}
+              <h3 className="text-base md:text-lg font-bold text-white line-clamp-2 leading-tight drop-shadow-lg">
+                {anime.title}
+              </h3>
+              
+              {/* Rating - Always Visible */}
+              {anime.rating > 0 && (
+                <div className="flex items-center space-x-1.5">
+                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-lg" />
+                  <span className="text-sm font-bold text-white drop-shadow-lg">
+                    {anime.rating.toFixed(1)}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Hover Overlay with Additional Info */}
@@ -64,85 +67,69 @@ export default function AnimeCard({ anime }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/90 to-dark-900/60 backdrop-blur-sm"
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 bg-dark-900/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-10"
               >
                 {/* Play Button */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    transition={{ duration: 0.3, type: "spring", bounce: 0.4 }}
-                    className="bg-gradient-to-r from-crimson-primary to-crimson-dark rounded-full p-5 shadow-2xl shadow-crimson-primary/60"
-                  >
-                    <Play className="w-10 h-10 text-white fill-white" />
-                  </motion.div>
-                </div>
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="bg-gradient-to-r from-crimson-primary to-crimson-dark rounded-full p-5 shadow-2xl shadow-crimson-primary/50 mb-6"
+                >
+                  <Play className="w-10 h-10 text-white fill-white" />
+                </motion.div>
 
-                {/* Additional Info on Hover */}
-                <div className="absolute inset-x-0 bottom-0 p-4 space-y-3">
-                  {/* Title */}
-                  <div>
-                    <h3 className="text-base font-bold text-white line-clamp-2 leading-tight mb-1">
-                      {anime.title}
-                    </h3>
-                    {anime.titleEn && (
-                      <p className="text-xs text-gray-300 line-clamp-1 font-medium">
-                        {anime.titleEn}
-                      </p>
-                    )}
-                  </div>
+                {/* Additional Info */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 20, opacity: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="w-full space-y-3 text-center"
+                >
+                  {/* English Title */}
+                  {anime.titleEn && (
+                    <p className="text-sm text-gray-300 line-clamp-2 px-2">
+                      {anime.titleEn}
+                    </p>
+                  )}
 
                   {/* Meta Info */}
-                  <div className="flex items-center flex-wrap gap-2 text-xs">
-                    {/* Rating */}
-                    {anime.rating > 0 && (
-                      <div className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-white/10 backdrop-blur-xl border border-white/20">
-                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                        <span className="font-bold text-white">{anime.rating.toFixed(1)}</span>
-                      </div>
-                    )}
-
-                    {/* Year */}
+                  <div className="flex items-center justify-center gap-3 text-xs text-gray-400">
                     {anime.year && (
-                      <div className="px-2.5 py-1.5 rounded-lg bg-white/10 backdrop-blur-xl border border-white/20">
-                        <span className="font-semibold text-white">{anime.year}</span>
-                      </div>
+                      <span className="px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-xl font-semibold">
+                        {anime.year}
+                      </span>
                     )}
-
-                    {/* Episodes */}
                     {anime.episodes && (
-                      <div className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-white/10 backdrop-blur-xl border border-white/20">
-                        <Clock className="w-3.5 h-3.5 text-gray-300" />
-                        <span className="font-semibold text-white">{anime.episodes} эп.</span>
-                      </div>
+                      <span className="px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-xl font-semibold">
+                        {anime.episodes} эп.
+                      </span>
                     )}
                   </div>
 
                   {/* Genres */}
                   {anime.genre && anime.genre.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap justify-center gap-2 px-2">
                       {anime.genre.slice(0, 3).map((genre, index) => (
                         <motion.span
                           key={index}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="px-2.5 py-1 text-xs font-semibold bg-crimson-primary/20 backdrop-blur-xl rounded-lg text-crimson-light border border-crimson-primary/30"
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.2 + index * 0.05 }}
+                          className="px-2.5 py-1 text-xs font-medium bg-white/10 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
                         >
                           {genre}
                         </motion.span>
                       ))}
                     </div>
                   )}
-                </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Subtle Border */}
-          <div className="absolute inset-0 border-2 border-white/5 group-hover:border-crimson-primary/50 rounded-2xl transition-colors duration-500 pointer-events-none"></div>
         </div>
       </motion.div>
     </Link>
