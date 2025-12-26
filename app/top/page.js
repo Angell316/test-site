@@ -1,11 +1,11 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
-import { featuredAnime } from '@/app/data/animeData'
+import { getTopAnime } from '@/lib/animeDatabase'
 import { TrendingUp } from 'lucide-react'
 
 export default function TopPage() {
-  const sortedAnime = [...featuredAnime].sort((a, b) => b.rating - a.rating)
+  const sortedAnime = getTopAnime(50)
 
   return (
     <main className="min-h-screen bg-dark-900">

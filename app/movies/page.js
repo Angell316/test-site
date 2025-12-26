@@ -1,10 +1,12 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
-import { animeMovies } from '@/app/data/animeData'
+import { getAnimeMovies } from '@/lib/animeDatabase'
 import { Film, Search, Filter } from 'lucide-react'
 
 export default function MoviesPage() {
+  const animeMovies = getAnimeMovies(100)
+  
   return (
     <main className="min-h-screen bg-dark-900">
       <Header />

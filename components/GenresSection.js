@@ -1,24 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { genres } from '@/app/data/animeData'
 import { Grid, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-
-// Популярные жанры аниме (по документации Kodik)
-const POPULAR_GENRES = [
-  'приключения',
-  'боевик',
-  'комедия',
-  'драма',
-  'фэнтези',
-  'романтика',
-  'фантастика',
-  'школа',
-  'сёнэн',
-  'сёдзё',
-  'повседневность',
-  'спорт'
-]
 
 export default function GenresSection() {
   return (
@@ -41,7 +25,7 @@ export default function GenresSection() {
 
         {/* Genres Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {POPULAR_GENRES.map((genre, index) => (
+          {genres.map((genre, index) => (
             <Link
               key={genre}
               href={`/anime?genre=${encodeURIComponent(genre)}`}
@@ -49,7 +33,7 @@ export default function GenresSection() {
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="relative z-10">
-                <h3 className="text-lg font-semibold text-white group-hover:text-crimson-primary transition-colors capitalize">
+                <h3 className="text-lg font-semibold text-white group-hover:text-crimson-primary transition-colors">
                   {genre}
                 </h3>
                 <ArrowRight className="w-5 h-5 text-crimson-primary mt-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-2 transition-all duration-300" />

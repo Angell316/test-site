@@ -10,12 +10,11 @@ export default function HeroBanner({ anime }) {
   const [imageError, setImageError] = useState({})
 
   useEffect(() => {
-    if (!anime || anime.length === 0) return
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % anime.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [anime])
+  }, [anime.length])
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % anime.length)
@@ -25,20 +24,7 @@ export default function HeroBanner({ anime }) {
     setCurrentSlide((prev) => (prev - 1 + anime.length) % anime.length)
   }
 
-  if (!anime || anime.length === 0) {
-    return (
-      <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden bg-dark-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-crimson-primary"></div>
-      </div>
-    )
-  }
-
   const currentAnime = anime[currentSlide]
-  
-  // Используем изображение трейлера если есть, иначе постер
-  const bannerImageUrl = currentAnime.bannerImage || 
-                         currentAnime.trailerImage || 
-                         currentAnime.image
 
   return (
     <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden bg-dark-900">
@@ -46,7 +32,7 @@ export default function HeroBanner({ anime }) {
       <div className="absolute inset-0">
         {!imageError[currentAnime.id] ? (
           <Image
-            src={bannerImageUrl}
+            src={currentAnime.image}
             alt={currentAnime.title}
             fill
             className="object-cover"
