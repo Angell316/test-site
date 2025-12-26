@@ -22,7 +22,6 @@ import {
 } from 'lucide-react'
 
 export default function AnimeDetailClient({ anime, relatedAnime }) {
-  const [showPlayer, setShowPlayer] = useState(false)
   const [selectedScreenshot, setSelectedScreenshot] = useState(null)
 
   return (
@@ -168,39 +167,18 @@ export default function AnimeDetailClient({ anime, relatedAnime }) {
               <p className="text-base text-gray-300 leading-relaxed">
                 {anime.description}
               </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-2">
-                <button 
-                  onClick={() => setShowPlayer(!showPlayer)}
-                  className="flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-crimson-primary to-crimson-dark text-white font-semibold shadow-lg shadow-crimson-primary/30 hover:shadow-xl hover:shadow-crimson-primary/40 transition-all duration-300"
-                >
-                  <Play className="w-5 h-5 fill-white" />
-                  <span>{showPlayer ? 'Скрыть плеер' : 'Смотреть аниме'}</span>
-                </button>
-                
-                <AnimeListButton animeId={anime.id} />
-                
-                <button 
-                  className="flex items-center justify-center px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-crimson-primary/50 text-white transition-all duration-300"
-                  title="Поделиться"
-                >
-                  <Share2 className="w-5 h-5" />
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Video Player Section - Simple and Clear */}
-      {showPlayer && anime.playerLink && (
+      {/* Video Player - Always Open */}
+      {anime.playerLink && (
         <section className="bg-dark-800 border-y border-white/5 py-8 md:py-12">
           <div className="container-custom px-6 lg:px-12">
             <VideoPlayer 
               playerLink={anime.playerLink}
               title={anime.title}
-              onClose={() => setShowPlayer(false)}
             />
           </div>
         </section>

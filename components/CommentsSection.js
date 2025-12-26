@@ -92,12 +92,12 @@ export default function CommentsSection({ animeId }) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Rating Section */}
+    <div className="space-y-6">
+      {/* Rating Section - Clean */}
       {isAuthenticated && (
-        <div className="glass-effect rounded-2xl p-6">
-          <h3 className="text-xl font-semibold text-white mb-4">Ваша оценка</h3>
-          <div className="flex items-center space-x-2">
+        <div className="p-6 rounded-2xl bg-dark-800/50 border border-white/10">
+          <h3 className="text-lg font-semibold text-white mb-4">Оцените аниме</h3>
+          <div className="flex flex-wrap items-center gap-2">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
               <button
                 key={rating}
@@ -107,7 +107,7 @@ export default function CommentsSection({ animeId }) {
                 className="transition-transform hover:scale-110"
               >
                 <Star
-                  className={`w-8 h-8 transition-colors ${
+                  className={`w-7 h-7 transition-colors ${
                     rating <= (hoverRating || userRating)
                       ? 'text-yellow-400 fill-yellow-400'
                       : 'text-gray-600'
@@ -116,87 +116,98 @@ export default function CommentsSection({ animeId }) {
               </button>
             ))}
             {userRating > 0 && (
-              <span className="ml-4 text-2xl font-bold text-white">{userRating}/10</span>
+              <span className="ml-3 text-xl font-bold text-white">{userRating}/10</span>
             )}
           </div>
         </div>
       )}
 
-      {/* Comments Section */}
-      <div className="glass-effect rounded-2xl p-6">
-        <h3 className="text-2xl font-semibold text-white mb-6">
-          Комментарии <span className="text-gray-400">({comments.length})</span>
-        </h3>
+      {/* Comments Section - Modern and Clean */}
+      <div className="p-6 rounded-2xl bg-dark-800/50 border border-white/10">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-display font-bold text-white">
+            Комментарии
+          </h3>
+          <span className="px-3 py-1 rounded-lg bg-white/5 text-gray-400 text-sm font-medium">
+            {comments.length}
+          </span>
+        </div>
 
         {/* Add Comment Form */}
         {isAuthenticated ? (
-          <form onSubmit={handleSubmitComment} className="mb-8">
+          <form onSubmit={handleSubmitComment} className="mb-6">
             <div className="relative">
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Напишите ваш комментарий..."
-                className="w-full px-4 py-3 pr-12 rounded-xl glass-effect text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-crimson-primary transition-all resize-none"
-                rows="4"
+                placeholder="Поделитесь своим мнением об этом аниме..."
+                className="w-full px-4 py-3 pr-12 rounded-xl bg-dark-900/50 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-crimson-primary transition-all resize-none"
+                rows="3"
               />
               <button
                 type="submit"
                 disabled={!newComment.trim()}
-                className="absolute bottom-4 right-4 p-2 rounded-lg bg-crimson-primary text-white hover:bg-crimson-light transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute bottom-3 right-3 p-2 rounded-lg bg-gradient-to-r from-crimson-primary to-crimson-dark text-white hover:shadow-lg hover:shadow-crimson-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="w-5 h-5" />
               </button>
             </div>
           </form>
         ) : (
-          <div className="mb-8 p-6 rounded-xl glass-effect text-center">
-            <p className="text-gray-400 mb-4">Войдите, чтобы оставить комментарий</p>
+          <div className="mb-6 p-4 rounded-xl bg-dark-900/50 border border-white/10 text-center">
+            <p className="text-gray-400">Войдите, чтобы оставить комментарий</p>
           </div>
         )}
 
         {/* Comments List */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {comments.length > 0 ? (
             comments.map((comment) => (
               <div
                 key={comment.id}
-                className="p-4 rounded-xl glass-effect hover:bg-white hover:bg-opacity-5 transition-all"
+                className="p-4 rounded-xl bg-dark-900/50 border border-white/5 hover:border-white/10 transition-all"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-crimson-primary to-crimson-dark flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-crimson-primary to-crimson-dark flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-bold text-sm">
                         {comment.userName.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-white">{comment.userName}</span>
+                        <span className="font-semibold text-white text-sm">{comment.userName}</span>
                         {comment.userRole !== 'user' && (
-                          <Shield className={`w-4 h-4 ${getRoleColor(comment.userRole)}`} />
+                          <Shield className={`w-3.5 h-3.5 ${getRoleColor(comment.userRole)}`} />
                         )}
                       </div>
                       <span className="text-xs text-gray-500">
-                        {new Date(comment.date).toLocaleString('ru')}
+                        {new Date(comment.date).toLocaleDateString('ru', { 
+                          day: 'numeric', 
+                          month: 'short', 
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </span>
                     </div>
                   </div>
                   {canDeleteComment(comment) && (
                     <button
                       onClick={() => handleDeleteComment(comment.id)}
-                      className="p-2 rounded-lg hover:bg-red-500 hover:bg-opacity-20 transition-all group"
+                      className="p-1.5 rounded-lg hover:bg-red-500/20 transition-all group"
                     >
-                      <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-400" />
+                      <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-400 transition-colors" />
                     </button>
                   )}
                 </div>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap ml-12">
                   {comment.text}
                 </p>
               </div>
             ))
           ) : (
-            <div className="text-center py-8">
+            <div className="text-center py-12">
               <p className="text-gray-400">Комментариев пока нет. Будьте первым!</p>
             </div>
           )}
