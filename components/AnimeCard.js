@@ -18,9 +18,9 @@ export default function AnimeCard({ anime }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <motion.div
-        whileHover={{ y: -8 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative overflow-hidden rounded-2xl border border-white/5 hover:border-crimson-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-crimson-primary/20"
+        whileHover={{ y: -3 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="relative overflow-hidden rounded-2xl border border-white/5 hover:border-crimson-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-crimson-primary/20"
       >
         {/* Full Image Container with Fixed Aspect Ratio */}
         <div className="relative aspect-[2/3.5] overflow-hidden bg-gradient-to-br from-dark-700 to-dark-800">
