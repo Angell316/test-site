@@ -272,7 +272,7 @@ export default function AnimeDetailClient({ anime, relatedAnime }) {
                   <Share2 className="w-5 h-5" />
                 </motion.button>
               </motion.div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

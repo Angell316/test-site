@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, TrendingUp } from 'lucide-react'
+import Image from 'next/image'
 
 /**
  * Компонент умных подсказок для поиска
@@ -31,7 +32,7 @@ export default function SearchSuggestions({
           <div className="px-4 py-2 border-b border-white/10 bg-dark-800/50">
             <div className="flex items-center space-x-2 text-xs text-gray-400">
               <TrendingUp className="w-3 h-3" />
-              <span>Результаты по запросу "{searchQuery}"</span>
+              <span>Результаты по запросу &quot;{searchQuery}&quot;</span>
             </div>
           </div>
 
@@ -49,11 +50,12 @@ export default function SearchSuggestions({
                 {/* Anime Image */}
                 {anime.image && (
                   <div className="relative w-12 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-dark-700">
-                    <img
+                    <Image
                       src={anime.image}
                       alt={anime.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      loading="lazy"
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      sizes="48px"
                     />
                   </div>
                 )}
