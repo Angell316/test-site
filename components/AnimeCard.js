@@ -22,8 +22,8 @@ export default function AnimeCard({ anime }) {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="relative overflow-hidden rounded-2xl border border-white/5 hover:border-crimson-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-crimson-primary/20"
       >
-        {/* Full Image Container with Fixed Aspect Ratio */}
-        <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-dark-700 to-dark-800">
+        {/* Full Image Container with Fixed Aspect Ratio - Increased height */}
+        <div className="relative aspect-[2/3.5] overflow-hidden bg-gradient-to-br from-dark-700 to-dark-800">
           {!imageError ? (
             <Image
               src={anime.image}
@@ -41,8 +41,8 @@ export default function AnimeCard({ anime }) {
           )}
 
           {/* Permanent Bottom Gradient with Main Info */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
-            <div className="space-y-2">
+          <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/95 to-transparent pt-8">
+            <div className="space-y-2.5">
               {/* Title - Always Visible */}
               <h3 className="text-base md:text-lg font-bold text-white line-clamp-2 leading-tight drop-shadow-lg">
                 {anime.title}
@@ -89,9 +89,14 @@ export default function AnimeCard({ anime }) {
                   transition={{ delay: 0.1 }}
                   className="w-full space-y-3 text-center"
                 >
+                  {/* Russian Title - Show on hover */}
+                  <h4 className="text-base md:text-lg font-bold text-white line-clamp-2 px-2 drop-shadow-lg">
+                    {anime.title}
+                  </h4>
+                  
                   {/* English Title */}
                   {anime.titleEn && (
-                    <p className="text-sm text-gray-300 line-clamp-2 px-2">
+                    <p className="text-sm text-gray-400 line-clamp-2 px-2">
                       {anime.titleEn}
                     </p>
                   )}
