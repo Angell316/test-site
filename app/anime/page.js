@@ -3,11 +3,16 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AnimeCard from '@/components/AnimeCard'
-import { filterAnime, getAllGenres, getAllYears, getAllTypes } from '@/lib/animeDatabase'
+import SearchSuggestions from '@/components/SearchSuggestions'
+import { filterAnime, getAllGenres, getAllYears, getAllTypes, normalizeAnime } from '@/lib/animeDatabase'
+import { getSuggestions } from '@/lib/trigramSearch'
+import { getAllAnime } from '@/lib/animeDatabase'
 import { Filter, Grid, Search, X, ChevronDown, Loader2, SlidersHorizontal } from 'lucide-react'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function AnimePage() {
+  const router = useRouter()
   const [anime, setAnime] = useState([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
@@ -25,18 +30,33 @@ export default function AnimePage() {
   const [minRating, setMinRating] = useState(0)
   const [sortBy, setSortBy] = useState('rating')
   
+  // Умные подсказки
+  const [suggestions, setSuggestions] = useState([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [allAnimeData, setAllAnimeData] = useState([])
+  
   // Данные для фильтров
   const [genres, setGenres] = useState([])
   const [years, setYears] = useState([])
   const [types, setTypes] = useState([])
   
   const observerTarget = useRef(null)
+  const searchRef = useRef(null)
 
-  // Загрузка данных для фильтров
+  // Загрузка данных для фильтров и всего каталога для подсказок
   useEffect(() => {
     setGenres(getAllGenres())
     setYears(getAllYears())
     setTypes(getAllTypes())
+    
+    // Загружаем все аниме для подсказок (кешируем)
+    try {
+      const allData = getAllAnime()
+      setAllAnimeData(allData.map(normalizeAnime))
+    } catch (error) {
+      console.error('Error loading anime data:', error)
+      setAllAnimeData([])
+    }
   }, [])
 
   // Функция загрузки аниме
@@ -97,14 +117,57 @@ export default function AnimePage() {
     }
   }, [hasMore, loading, page, loadAnime])
 
-  // Обработка поиска с задержкой (debounce)
+  // Обработка поиска с задержкой (debounce) и генерация подсказок
   useEffect(() => {
+    // Генерируем подсказки в реальном времени
+    if (searchInput.length >= 3) {
+      const getSearchableTexts = (anime) => [
+        anime.title,
+        anime.titleEn,
+        anime.titleOriginal
+      ].filter(Boolean)
+      
+      const searchSuggestions = getSuggestions(
+        searchInput,
+        allAnimeData,
+        getSearchableTexts,
+        5
+      )
+      setSuggestions(searchSuggestions)
+      setShowSuggestions(true)
+    } else {
+      setSuggestions([])
+      setShowSuggestions(false)
+    }
+    
+    // Задержка перед реальным поиском
     const timer = setTimeout(() => {
       setSearchQuery(searchInput)
+      setShowSuggestions(false) // Скрываем подсказки когда начинается поиск
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [searchInput])
+  }, [searchInput, allAnimeData])
+  
+  // Обработка клика вне области подсказок
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+  
+  // Обработка выбора подсказки
+  const handleSuggestionSelect = (selectedAnime) => {
+    setShowSuggestions(false)
+    setSearchInput('')
+    setSearchQuery('')
+    router.push(`/anime/${selectedAnime.id}`)
+  }
 
   // Сброс фильтров
   const resetFilters = () => {
@@ -178,23 +241,40 @@ export default function AnimePage() {
             </button>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          {/* Search Bar with Smart Suggestions */}
+          <div className="relative mb-6" ref={searchRef}>
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Поиск по названию аниме..."
+              onFocus={() => {
+                if (searchInput.length >= 3 && suggestions.length > 0) {
+                  setShowSuggestions(true)
+                }
+              }}
+              placeholder="Поиск по названию аниме... (умный поиск с опечатками)"
               className="w-full pl-12 pr-12 py-4 rounded-xl glass-effect text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-crimson-primary transition-all"
             />
             {searchInput && (
               <button
-                onClick={() => setSearchInput('')}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all"
+                onClick={() => {
+                  setSearchInput('')
+                  setShowSuggestions(false)
+                }}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all z-10"
               >
                 <X className="w-5 h-5 text-gray-400" />
               </button>
+            )}
+            
+            {/* Smart Suggestions */}
+            {showSuggestions && suggestions.length > 0 && (
+              <SearchSuggestions
+                suggestions={suggestions}
+                onSelect={handleSuggestionSelect}
+                searchQuery={searchInput}
+              />
             )}
           </div>
 
