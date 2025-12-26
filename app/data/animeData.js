@@ -18,10 +18,10 @@ export const getAllAnime = () => {
   return [...allFromDb, ...customAnime]
 }
 
-// Получение реальных данных из базы
-const homeData = typeof window === 'undefined' ? getHomePageData() : { featured: [], popular: [] }
+// Получение реальных данных из базы - загружаем всегда одинаково
+const homeData = getHomePageData()
 
-export const featuredAnime = homeData.featured
-export const popularAnime = homeData.popular
-export const animeMovies = typeof window === 'undefined' ? getAnimeMovies(10) : []
-export const genres = typeof window === 'undefined' ? getAllGenres() : []
+export const featuredAnime = homeData.featured || []
+export const popularAnime = homeData.popular || []
+export const animeMovies = getAnimeMovies(8) || []
+export const genres = getAllGenres() || []
