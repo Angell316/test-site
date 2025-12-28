@@ -4,8 +4,18 @@ import HeroBanner from '@/components/HeroBanner'
 import OngoingSection from '@/components/OngoingSection'
 import TrendingSection from '@/components/TrendingSection'
 import MoviesSection from '@/components/MoviesSection'
+import SeriesSection from '@/components/SeriesSection'
 import GenresSection from '@/components/GenresSection'
-import { getHomePageData, getOngoingAnime, getAnimeMovies } from '@/lib/animeDatabase'
+import { getHomePageData, getOngoingAnime } from '@/lib/animeDatabase'
+
+// Статическая генерация главной страницы
+export const revalidate = 3600 // Ревалидация каждый час
+
+// Метаданные для SEO
+export const metadata = {
+  title: 'AnimeVerse - Смотреть аниме онлайн',
+  description: 'Большая коллекция аниме онлайн. Фильмы, сериалы, онгоинги - всё в одном месте!',
+}
 
 export default function Home() {
   const homeData = getHomePageData()
@@ -22,6 +32,7 @@ export default function Home() {
       <OngoingSection anime={ongoingAnime} />
       <TrendingSection anime={trendingAnime} />
       <MoviesSection />
+      <SeriesSection />
       <GenresSection />
       <Footer />
     </main>

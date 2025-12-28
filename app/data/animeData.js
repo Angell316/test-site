@@ -3,6 +3,8 @@ import {
   getHomePageData, 
   getAllGenres, 
   getAnimeMovies,
+  getAnimeSeries,
+  getAnimeByContentType,
   normalizeAnime
 } from '@/lib/animeDatabase'
 
@@ -24,4 +26,5 @@ const homeData = getHomePageData()
 export const featuredAnime = homeData.featured || []
 export const popularAnime = homeData.popular || []
 export const animeMovies = getAnimeMovies(8) || []
+export const animeSeries = getAnimeSeries(8) || []
 export const genres = getAllGenres() || []

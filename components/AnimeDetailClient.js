@@ -7,6 +7,7 @@ import AnimeCard from './AnimeCard'
 import AnimeListButton from './AnimeListButton'
 import CommentsSection from './CommentsSection'
 import VideoPlayer from './VideoPlayer'
+import NextEpisodeTimer from './NextEpisodeTimer'
 import { 
   Play, 
   Star, 
@@ -112,6 +113,9 @@ export default function AnimeDetailClient({ anime, relatedAnime }) {
                     <span className="text-gray-300">{anime.duration} мин</span>
                   </div>
                 )}
+
+                {/* Next Episode Timer - минималистичный стиль */}
+                <NextEpisodeTimer anime={anime} />
               </div>
 
               {/* Status & Quality */}
@@ -172,6 +176,34 @@ export default function AnimeDetailClient({ anime, relatedAnime }) {
         </div>
       </section>
 
+      {/* Screenshots Gallery - Clean and Simple */}
+      {anime.screenshots && anime.screenshots.length > 0 && (
+        <div className="container-custom px-6 lg:px-12">
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-6 md:mb-8">
+            Скриншоты
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {anime.screenshots.slice(0, 8).map((screenshot, index) => (
+              <div 
+                key={index}
+                onClick={() => setSelectedScreenshot(screenshot)}
+                className="relative aspect-video rounded-xl overflow-hidden shadow-lg border border-white/5 hover:border-crimson-primary/50 cursor-pointer group transition-all duration-300"
+              >
+                <Image
+                  src={screenshot}
+                  alt={`Screenshot ${index + 1}`}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Empty Section for Styling */}
+      <section className="py-6 md:py-8 bg-dark-900"></section>
+
       {/* Video Player - Always Open */}
       {anime.playerLink && (
         <section className="bg-dark-800 border-y border-white/5 py-8 md:py-12">
@@ -180,33 +212,6 @@ export default function AnimeDetailClient({ anime, relatedAnime }) {
               playerLink={anime.playerLink}
               title={anime.title}
             />
-          </div>
-        </section>
-      )}
-
-      {/* Screenshots Gallery - Clean and Simple */}
-      {anime.screenshots && anime.screenshots.length > 0 && (
-        <section className="py-12 md:py-16 bg-dark-900">
-          <div className="container-custom px-6 lg:px-12">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-6 md:mb-8">
-              Скриншоты
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {anime.screenshots.slice(0, 8).map((screenshot, index) => (
-                <div 
-                  key={index}
-                  onClick={() => setSelectedScreenshot(screenshot)}
-                  className="relative aspect-video rounded-xl overflow-hidden shadow-lg border border-white/5 hover:border-crimson-primary/50 cursor-pointer group transition-all duration-300"
-                >
-                  <Image
-                    src={screenshot}
-                    alt={`Screenshot ${index + 1}`}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
-            </div>
           </div>
         </section>
       )}

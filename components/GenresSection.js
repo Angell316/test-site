@@ -1,11 +1,10 @@
 'use client'
 
-import { genres } from '@/app/data/animeData'
 import { Grid, ArrowRight, Sparkles, Compass } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-export default function GenresSection() {
+export default function GenresSection({ genres = [] }) {
   // Проверка на наличие данных
   if (!genres || genres.length === 0) {
     return null

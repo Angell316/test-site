@@ -140,3 +140,5 @@ const backgroundImage = currentAnime.screenshots && currentAnime.screenshots.len
 **Дата обновления**: 26 декабря 2024
 **Версия**: 2.0.0
 
+
+

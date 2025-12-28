@@ -1,14 +1,13 @@
 'use client'
 
 import AnimeCard from './AnimeCard'
-import { animeMovies } from '@/app/data/animeData'
 import { Film, ChevronRight, Clapperboard } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-export default function MoviesSection() {
+export default function MoviesSection({ movies = [] }) {
   // Проверка на наличие данных
-  if (!animeMovies || animeMovies.length === 0) {
+  if (!movies || movies.length === 0) {
     return null
   }
 
@@ -64,7 +63,7 @@ export default function MoviesSection() {
 
         {/* Cards Grid with stagger animation */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-          {animeMovies.map((movie, index) => (
+          {movies.map((movie, index) => (
             <motion.div
               key={movie.id}
               initial={{ opacity: 0, y: 30 }}

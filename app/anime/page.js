@@ -27,6 +27,7 @@ export default function AnimePage() {
   const [selectedYear, setSelectedYear] = useState('')
   const [selectedType, setSelectedType] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedContentType, setSelectedContentType] = useState('') // 'movie', 'series', или ''
   const [minRating, setMinRating] = useState(0)
   const [sortBy, setSortBy] = useState('rating')
   
@@ -74,6 +75,7 @@ export default function AnimePage() {
       year: selectedYear,
       type: selectedType,
       status: selectedStatus,
+      contentType: selectedContentType,
       minRating,
       sortBy,
       page: pageNum,
@@ -84,13 +86,13 @@ export default function AnimePage() {
     setTotal(result.total)
     setHasMore(result.hasMore)
     setLoading(false)
-  }, [searchQuery, selectedGenre, selectedYear, selectedType, selectedStatus, minRating, sortBy, loading])
+  }, [searchQuery, selectedGenre, selectedYear, selectedType, selectedStatus, selectedContentType, minRating, sortBy, loading])
 
   // Первоначальная загрузка
   useEffect(() => {
     setPage(1)
     loadAnime(1, true)
-  }, [searchQuery, selectedGenre, selectedYear, selectedType, selectedStatus, minRating, sortBy])
+  }, [searchQuery, selectedGenre, selectedYear, selectedType, selectedStatus, selectedContentType, minRating, sortBy])
 
   // Intersection Observer для lazy loading
   useEffect(() => {
@@ -177,13 +179,14 @@ export default function AnimePage() {
     setSelectedYear('')
     setSelectedType('')
     setSelectedStatus('')
+    setSelectedContentType('')
     setMinRating(0)
     setSortBy('rating')
   }
 
   // Проверка активных фильтров
   const hasActiveFilters = searchQuery || selectedGenre || selectedYear || 
-                          selectedType || selectedStatus || minRating > 0
+                          selectedType || selectedStatus || selectedContentType || minRating > 0
 
   const statusOptions = [
     { value: '', label: 'Все статусы' },
@@ -293,6 +296,17 @@ export default function AnimePage() {
                     {option.label}
                   </option>
                 ))}
+              </select>
+
+              {/* Content Type Filter - Фильмы/Сериалы */}
+              <select
+                value={selectedContentType}
+                onChange={(e) => setSelectedContentType(e.target.value)}
+                className="px-4 py-2 rounded-lg glass-effect text-white focus:outline-none focus:ring-2 focus:ring-crimson-primary cursor-pointer"
+              >
+                <option value="" className="bg-dark-800">Все</option>
+                <option value="movie" className="bg-dark-800">🎬 Фильмы</option>
+                <option value="series" className="bg-dark-800">📺 Сериалы</option>
               </select>
 
               {/* Status */}

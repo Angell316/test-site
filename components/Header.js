@@ -24,8 +24,9 @@ export default function Header() {
 
   const navLinks = [
     { href: '/', label: 'Главная', icon: Play },
-    { href: '/anime', label: 'Аниме', icon: Tv },
+    { href: '/anime', label: 'Каталог', icon: Tv },
     { href: '/movies', label: 'Фильмы', icon: Film },
+    { href: '/series', label: 'Сериалы', icon: Tv },
     { href: '/top', label: 'Топ', icon: Star },
   ]
 
